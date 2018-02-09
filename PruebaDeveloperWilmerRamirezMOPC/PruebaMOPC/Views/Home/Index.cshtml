@@ -1,0 +1,203 @@
+﻿<div style="padding-left: 15px; padding-right: 15px;">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="checkbox">
+                <label>
+                    <input id="checkbox" type="checkbox"> Represento a una institución
+                </label>
+            </div>
+            <label>
+                Despues de crear el registro, solicitalo con el siguiente request 'api/request/' y el id del registro.
+            </label>
+        </div>
+        <div class="panel-body">
+                <div class="form-group">
+                    <div class="row">
+
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Cédula">Cédula*</label>
+                            <input class="form-control" id="cedula" placeholder="Cédula" required>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Nombre">Nombre*</label>
+                            <input class="form-control" id="nombre" type="text" placeholder="Nombre" required>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Email">Email</label>
+                            <input class="form-control" id="email" type="email" placeholder="Correo electrónico" required="">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Telefono">Teléfono</label>
+                            <input class="form-control" id="telefono" type="tel" placeholder="Teléfono">
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Provincia">Provincia*</label>
+                            <select class="form-control" id="provincia" onchange="changeData()" required><option> </option></select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2">
+                            <label for="Municipio">Municipio*</label>
+                            <select class="form-control" id="municipio" required></select>
+                        </div>
+                    </div>
+
+                    <div class="row" style="display: none; margin-top: 10px;" id="RNC">
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label for="RNC">RNC*</label>
+                            <input class="form-control" id="rnc" type="text" placeholder="RNC" required>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label for="Nombre/Razón Social">Nombre/Razón Social*</label>
+                            <input class="form-control" id="nombreRazonSocial" type="text" placeholder="Nombre/Razón Social">
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <label for="Posición o Cargo">Posición o Cargo*</label>
+                            <input class="form-control" id="posicion" type="text" placeholder="Posición o Cargo" required="">
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-lg-12 col-md-12 col-xs-12">
+                            <label for="comentario">Comentarios*</label>
+                            <textarea id="comentario" class="form-control" style="min-width: 100%;" rows="6"></textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-sm-8">
+                            <label for="file"> </label>
+                            <input type="file">
+                            <p class="help-block">Tamaño máximo total: 2Mb.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #dddddd; padding-top: 10px;">
+                    <button class="btn btn-primary" type="button" onclick="sendModel()" id="btnEnviar">Enviar</button>
+                    <br>
+                </div>
+
+        </div>
+
+    </div>
+
+
+    @section scripts {
+
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="~/MOPCFiles/provincias.js"></script>
+        <script type="text/javascript">
+
+
+            var provincia = document.getElementById("provincia");
+            var municipio = document.getElementById("municipio");
+            var prov = JSON.parse(provincias);
+
+            putData('provincia', prov.Provincias);
+
+            $('#checkbox').change(function () {
+                if (this.checked) {
+
+                    $('#RNC').css('display', 'block');
+                } else {
+                    $('#RNC').css('display', 'none');
+                }
+            });
+            
+            function changeData() {
+                municipio.innerHTML = null;
+                var array = prov.Provincias.filter(element => element.Provincia == provincia.value);
+                putData('municipio', array[0].Municipios);
+            }
+
+            function putData(select, array) {
+                for (x = 0; x < array.length; x++) {
+                    var selector = document.getElementById(select);
+                    var option = document.createElement("option");
+                    option.text = select == 'provincia' ? prov.Provincias[x].Provincia : array[x];
+                    selector.add(option);
+                }
+            }
+
+            function sendModel() {
+
+                var cedula = $('#cedula').val();
+                var RNC = $('#rnc').val();
+                var Nombre = $('#nombre').val();
+                var Email = $('#email').val();
+                var Telefono = $('#telefono').val();
+                var Provincia = $('#provincia').val();
+                var Municipio = $('#municipio').val() ? $('#municipio').val() : "";
+                var RazonSocial = $('#nombreRazonSocial').val();
+                var Posicion = $('#posicion').val();
+                var Comentario = $('#comentario').val();
+                
+                var length = cedula.length *
+                    RNC.length *
+                    Nombre.length *
+                    Provincia.length *
+                    Municipio.length *
+                    Comentario.length *
+                    RazonSocial.length *
+                    Posicion.length;
+                    
+
+                if (length == 0) {
+                    alert("Rellena todos los campos requeridos");
+                } else {
+                    
+                    var MOPCModel = {
+                        Cedula: cedula,
+                        RNC: RNC,
+                        Nombre: Nombre,
+                        Email: Email,
+                        Telefono: Telefono,
+                        Provincia: Provincia,
+                        Municipio: Municipio,
+                        RazonSocial: RazonSocial,
+                        Posicion: Posicion,
+                        Comentario: Comentario
+                    }
+
+                    $.get("api/Request/ExisteCedula/" + MOPCModel.Cedula, function (response) {
+                        if (response) {
+                            alert("Ya existe esta cedula");
+                        } else {
+                            $.get("api/Request/ExisteRnc/" + MOPCModel.RNC, function (response) {
+                                if (response) {
+                                    alert("Ya existe este rnc");
+                                } else {
+                                    $.ajax({
+                                        async: false,
+                                        cache: false,
+                                        type: "POST",
+                                        url: "@(Url.Action("Request","api"))",
+                                        data: MOPCModel,
+                                        success: function (response) {
+
+                                            alert("Registrado con exito. Id:" + response);
+
+                                            $('#cedula').val("");
+                                            $('#rnc').val("");
+                                            $('#nombre').val("");
+                                            $('#email').val("");
+                                            $('#telefono').val("");
+                                            $('#provincia').val("");
+                                            $('#municipio').val("");
+                                            $('#nombreRazonSocial').val("");
+                                            $('#posicion').val("");
+                                            $('#comentario').val("");
+
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        </script>
+    }
+</div>
