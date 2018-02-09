@@ -24,7 +24,7 @@ namespace PruebaMOPC.Controllers
 
         [HttpGet]
         [Route("api/Request/ExisteCedula/{cedula}")]
-        public IHttpActionResult ExisteCedula(int cedula)
+        public IHttpActionResult ExisteCedula(string cedula)
         {
             var registroCedula = bd.MOPCData.Where(b => b.Cedula == cedula).SingleOrDefault();
             return registroCedula != null ? Ok(true) : Ok(false);
