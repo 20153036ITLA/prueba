@@ -10,7 +10,7 @@ namespace PruebaMOPC.Models
 
         public int Id { get; set; }
 
-        public int Cedula { get; set; }
+        public string Cedula { get; set; }
 
         public int? RNC { get; set; }
 
